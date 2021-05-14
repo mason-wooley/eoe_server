@@ -1,0 +1,6 @@
+# Dependencies
+/node_modules
+/.vscode
+
+# Testing
+*.bat
