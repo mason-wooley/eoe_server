@@ -10,15 +10,23 @@ const jwtAuthz = require("express-jwt-authz");
 //const authConfig = require(".auth/auth_config.json");
 const { ClientCredentials } = require('simple-oauth2');
 const fetch = require('node-fetch');
+require('dotenv').config()
 
 const app = express();
 
-const port = 3001;
-const appPort = 3000;
-const appOrigin = `http://localhost:${appPort}`;
+// Importing env variables
+const serverPort = process.env.SERVER_PORT;
+const clientPort = process.env.CLIENT_PORT;
+const dbName = process.env.MONGODB_NAME;
+const dbUser = process.env.MONGODB_USER;
+const dbPass = process.env.MONGODB_PASS;
+const dbPath = process.env.MONGODB_PATH;
+const dbPort = process.env.NONGODB_PORT;
+const blizzClient = process.env.BLIZZARD_CLIENT_ID;
+const blizzSecret = process.env.BLIZZARD_CLIENT_SECRET;
 
-const dbName = "envyofeden";
-const uri = 'mongodb://superuser:password@localhost:27017';
+const appOrigin = `http://localhost:${clientPort}`;
+const uri = `mongodb://${dbUser}:${dbPass}@${dbPath}:${dbPort}`;
 
 /*
 if (!authConfig.domain || !authConfig.audience) {
@@ -66,7 +74,7 @@ client.connect(
         assert.strictEqual(null, err);
         console.log("Connected to server successfully.");
         db = client.db(dbName);
-        app.listen(port);
+        app.listen(serverPort);
     }
 );
 
@@ -78,8 +86,7 @@ app.get('/api/view-applications', authorizeAccessToken, checkPermissions, (req, 
 
 // BLIZZARD API STUFF
 // TODO: Put the id/secret in an .env file
-const client_id = '1c6a420988a34f45b4506ca6e66ca809';
-const client_secret = 'mGPbV7RQxACH5ESve7d7dwtURP4haobx';
+
 
 // TODO: Don't fetch a new token every time this call is made. Maybe store the full token
 // in the database
@@ -90,8 +97,8 @@ const getToken = new Promise((resolve, reject) => {
   // Auth2 config object
   const config = {
     client: {
-      id: client_id,
-      secret: client_secret 
+      id: blizzClient,
+      secret: blizzSecret 
     },
     auth: {
       tokenHost: host
